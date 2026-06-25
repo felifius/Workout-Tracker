@@ -9,11 +9,12 @@ dotenv.config({path:'../'});
 
 
 async function createWorkout(req, res){
-    if(!req.body.name || !req.body.exercises || !req.body.userEmail)
+    if(!req.body.name || !req.body.exercises)
     {
-        return res.status(400).json("Envie os dados necessários: name, exercises e userEmail");
+        return res.status(400).json("Envie os dados necessários: name, exercises");
     }
-    const nameExist = await workout.findOne({name:req.body.name});
+    req.body.userEmail = req.cookies.email;
+    const nameExist = await workout.findOne({name:req.body.name, userEmail:req.cookies.email});
     if(nameExist) return res.status(400).json("Nome de workout já cadastrado");
 
     const newWorkout = await workout.create(req.body);
@@ -23,9 +24,10 @@ async function createWorkout(req, res){
 async function updateWorkout(req, res){
     try{
         if(req.body.scheduleWorkout) return res.status(400).json("Atualize a data usando o scheduleWorkout");
-        const nameExist = await workout.findOne({name:req.params.name});
+        const nameExist = await workout.findOne({name:req.params.name, userEmail:req.cookies.email});
         if(!nameExist) return res.status(404).json("Workout não encontrado");
-        const updateWorkout = await workout.updateOne({name:req.params.name}, req.body);
+
+        const updateWorkout = await workout.updateOne({name:req.params.name, userEmail:req.cookies.email}, req.body);
         res.status(200).json({message:"Workout atualizado com sucesso", updateWorkout});
     }
     catch(error){
@@ -35,7 +37,7 @@ async function updateWorkout(req, res){
 
 async function deleteWorkout(req, res){
     try{
-        const deleteWorkout = await workout.findOneAndDelete({name:req.params.name});
+        const deleteWorkout = await workout.findOneAndDelete({name:req.params.name, userEmail:req.cookies.email});
         if(!deleteWorkout) return res.status(404).json("Workout não encontrado");
         res.json({message:"Workout deletado com sucesso", deleteWorkout});
     }
@@ -46,7 +48,7 @@ async function deleteWorkout(req, res){
 
 async function scheduleWorkout(req, res){
     try{
-        const nameExist = await workout.findOne({name:req.params.name});
+        const nameExist = await workout.findOne({name:req.params.name, userEmail:req.cookies.email});
         if(!nameExist) return res.status(404).json("Workout não encontrado");
 
         if(!req.body.schedule)  return res.status(400).json("A data que pretende fazer o workout é obrigatorio");
@@ -62,10 +64,8 @@ async function scheduleWorkout(req, res){
 }
 async function listWorkout(req,res){
     try{
-        const userEmail = req.params.userEmail || req.query.userEmail || req.body.userEmail;
-        if(!userEmail) return res.status(400).json("Informe o userEmail na rota, query ou body");
 
-        const workouts = await workout.find({userEmail:userEmail, status: "Pending"}).populate('exercises.exerciseId');
+        const workouts = await workout.find({userEmail:req.cookies.email, status: "Pending"}).populate('exercises.exerciseId');
         if(!workouts || workouts.length === 0) return res.status(404).json({message: "Nenhum workout encontrado para este usuário"});
 
         res.status(200).json(workouts);
@@ -77,10 +77,8 @@ async function listWorkout(req,res){
 
 async function generateReport(req, res){
     try{
-        const userEmail = req.params.userEmail || req.query.userEmail || req.body.userEmail;
-        if(!userEmail) return res.status(400).json("Informe o userEmail na rota, query ou body");
 
-        const workouts = await workout.find({userEmail:userEmail, status: "completed"}).populate('exercises.exerciseId');
+        const workouts = await workout.find({userEmail: req.cookies.email, status: "completed"}).populate('exercises.exerciseId');
         if(!workouts || workouts.length === 0) return res.status(404).json({message: "Nenhum workout concluido por este usuário"});
 
         res.status(200).json(workouts);

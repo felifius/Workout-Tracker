@@ -11,7 +11,7 @@ dotenv.config({path:'../'});
 async function register(req, res){
     try{
         //verifica se todos os campos estao povoados
-        if(!req.body || !req.body.name || !req.body.password || !req.body.email) 
+        if(!req.body.name || !req.body.password || !req.body.email) 
         {
             return res.status(400).json("Envie os dados necessários");
         }        
@@ -54,6 +54,8 @@ async function login(req, res){
         res.cookie('token', token, {
             maxAge: 24 * 60 * 60 * 1000 // Expira em 1 dia
         });
+
+        res.cookie('email', req.body.email);
         return res.status(200).json({message:`Login de ${curruser.name} efetuado com sucesso`, token});
     }
     catch(error){
@@ -86,6 +88,7 @@ async function getusers(req, res){
 async function logout(req, res){
     try{
         res.clearCookie('token');
+        res.clearCookie('email');
         return res.status(401).json("Logout efetuado com sucesso");
 
     }

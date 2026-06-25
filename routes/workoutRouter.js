@@ -6,8 +6,8 @@ const router = express.Router();
 
 
 router.post('/addworkout', checktoken, createWorkout);
-router.get('/listworkout/:userEmail', checktoken, listWorkout);
-router.get('/generatereport/:userEmail', checktoken, generateReport);
+router.get('/listworkout/', checktoken, listWorkout);
+router.get('/generatereport/', checktoken, generateReport);
 router.put('/updateworkout/:name', checktoken, updateWorkout);
 router.delete('/deleteworkout/:name', checktoken, deleteWorkout);
 router.put('/scheduleWorkout/:name', checktoken, scheduleWorkout);
