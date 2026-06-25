@@ -4,6 +4,7 @@ import authRouter from './routes/authRouter.js';
 import workoutRouter from './routes/workoutRouter.js';
 import './modules/Exercises.js';
 import {connectDB} from "./db.js";
+import cookieParser from 'cookie-parser';
 
 
 
@@ -14,6 +15,7 @@ const PORT = 3000;
 const secret = process.env.SECRET;
 
 app.use(express.json());
+app.use(cookieParser());
 
 
 app.use('/', authRouter);

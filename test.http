@@ -1,0 +1,18 @@
+@baseurl = http://localhost:3000
+
+
+###POST LOGIN
+POST {{baseurl}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+ "password":"Feli1402",
+ "email": "felipefiusaschmidt@gmail.com"
+}
+
+###POST LOGOUT
+POST {{baseurl}}/logout HTTP/1.1
+Content-Type: application/json
+{
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzQzMTVlMjdiYTNiN2Q0ZjBlYzNjNiIsImlhdCI6MTc4MjQwNjM3N30.SeIgD33Wt-bPBgxIDAre9rvv6q2frU99Ij5aDb3wLCk
+}
